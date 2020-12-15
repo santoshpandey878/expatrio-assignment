@@ -1,0 +1,52 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3'
+
+#Define services
+services:
+
+  #PostgreSQL Database for the application
+  ems-postgres:
+    image: "postgres:9.6-alpine"
+    container_name: app-database
+    #Volume mounted for database for the storage
+    volumes:
+      - ems-data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - 5437:5432 # Forward the exposed port 5432 on the container to port 5432 on the host machine
+
+    #Environment variable for DB name, user and password
+    environment:
+      - POSTGRES_DB=usermanagement
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  #Back-end Spring Boot Application
+  ems-app:
+    #The docker file in scrum-app build the jar and provides the docker image with the following name.
+    build: ./back-end/usermanagement
+    container_name: app-server
+
+    #Environment variables for Spring Boot Application.
+    environment:
+      - DB_SERVER=ems-postgres
+      - POSTGRES_DB=usermanagement
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 9082:9082 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    links:
+      - ems-postgres
+
+  #Front-end Angular Application
+  ems-ui:
+    build: ./front-end/user-management-application
+    container_name: app-ui
+    ports:
+      - 4200:80
+    links:
+      - ems-app
+
+#Volumes for DB data
+volumes:
+  ems-data:
