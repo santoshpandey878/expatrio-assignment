@@ -13,7 +13,7 @@ services:
       - ems-data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
-      - 5437:5432 # Forward the exposed port 5432 on the container to port 5432 on the host machine
+      - 5437:5432 # Forward the exposed port 5437 on the container to port 5432 on the host machine
 
     #Environment variable for DB name, user and password
     environment:
@@ -34,7 +34,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - 9082:9082 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+      - 9082:9082 # Forward the exposed port 9082 on the container to port 9082 on the host machine
     links:
       - ems-postgres
 
